@@ -136,5 +136,5 @@ function getOutputFolder(ngPackagePath) {
 }
 
 async function build(packageManager, projectName, params) {
-  await execa(packageManager, ['ng', 'build', projectName], params);
+  await execa(packageManager, [...(packageManager === 'npm' ? ['run'] : []), 'ng', 'build', projectName], params);
 }

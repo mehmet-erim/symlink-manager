@@ -75,10 +75,10 @@ export async function cli(args) {
           yarn: true,
           packages: [
             {
-              buildCommand: 'ng build core',
-              buildCommandRunPath: './',
               libraryFolderPath: 'packages/core',
               linkFolderPath: 'dist/core',
+              buildCommand: 'ng build core',
+              buildCommandRunPath: './',
             },
           ],
         },
