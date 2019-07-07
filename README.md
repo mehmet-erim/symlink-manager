@@ -16,7 +16,7 @@ npm install symlink-manager --save-dev
 
 Insert the following line in scripts of your package.json file.
 
-```json
+```js
   // ...
   "scripts": {
     "symlink": "symlink",
@@ -44,7 +44,7 @@ If you are not using Angular, you must add symlink.config.json for your configur
 
 symlink.config.json example:
 
-```json
+```js
 {
   "yarn": true,
   "packages": [
