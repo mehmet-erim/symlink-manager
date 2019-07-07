@@ -1,0 +1,11 @@
+{
+  "yarn": true,
+  "packages": [
+    {
+      "buildCommand": "ng build core",
+      "buildCommandRunPath": "./",
+      "libraryFolderPath": "packages/core",
+      "linkFolderPath": "dist/core"
+    }
+  ]
+}

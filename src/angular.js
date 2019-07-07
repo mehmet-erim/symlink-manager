@@ -55,17 +55,22 @@ export default async function(options) {
     projectName: projectNames[index],
     outputFolderPath: getOutputFolder(library.architect.build.options.project),
   }));
-  const selectedPackages = await prompt('packages', packageNames, 'Please choose packages:', 'checkbox');
+  const selectedPackages = await prompt(
+    'packages',
+    packageNames,
+    'Please choose packages for create symbolic link:',
+    'checkbox',
+  );
 
   if (!selectedPackages.length) {
     Log.error('You must choose at least one package');
-    return;
+    process.exit(1);
   }
   const spinner = Log.spinner('Processing...');
   const packageManager = options.yarn ? 'yarn' : 'npm';
-  if (options.command === 'link') {
-    selectedPackages.forEach(async packName => {
-      const { projectName, outputFolderPath, root } = libraries.find(library => library.packageName === packName);
+  selectedPackages.forEach(async packName => {
+    const { projectName, outputFolderPath, root } = libraries.find(library => library.packageName === packName);
+    if (options.command === 'link') {
       try {
         spinner.start();
 
@@ -73,7 +78,7 @@ export default async function(options) {
           await build(packageManager, projectName);
         } catch (error) {
           await build(packageManager, projectName, { stdio: 'inherit' });
-          return;
+          process.exit(1);
         }
 
         await execa(packageManager, ['link'], { cwd: outputFolderPath });
@@ -104,12 +109,9 @@ export default async function(options) {
       } catch (err) {
         spinner.stop();
         Log.error(err);
-        return;
+        process.exit(1);
       }
-    });
-  } else {
-    selectedPackages.forEach(async packName => {
-      const { outputFolderPath } = libraries.find(library => library.packageName === packName);
+    } else {
       try {
         spinner.start();
 
@@ -117,13 +119,14 @@ export default async function(options) {
         await execa(packageManager, ['unlink'], { cwd: outputFolderPath });
 
         spinner.stop();
+        Log.info(`\nSymbolic link to ${packName} is successfully deleted.`);
       } catch (error) {
         spinner.stop();
-        log(error, 'red');
-        return;
+        Log.error(error);
+        process.exit(1);
       }
-    });
-  }
+    }
+  });
 }
 
 function getOutputFolder(ngPackagePath) {
