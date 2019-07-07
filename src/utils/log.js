@@ -26,5 +26,6 @@ export class Log {
   static spinner(text) {
     const spinner = ora(kleur.cyan().bold(text));
     spinner.color = 'yellow';
+    return spinner;
   }
 }

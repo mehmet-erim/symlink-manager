@@ -31,8 +31,8 @@ export async function cli(args) {
     options.yarn = IS_EXIST_YARN_LOCK;
   }
 
-  if (!(options.command === 'Link' || options.comman === 'Unlink')) {
-    options.command = await prompt('command', ['Link', 'Unlink'], 'Please pick a command');
+  if (!(options.command.toLowerCase() === 'link' || options.command.toLowerCase() === 'unlink')) {
+    options.command = (await prompt('command', ['Link', 'Unlink'], 'Please pick a command')).toLowerCase();
   }
 
   if (!options.forAngular) {
@@ -40,7 +40,7 @@ export async function cli(args) {
   }
 
   if (options.forAngular) {
-    await angular(options.command);
+    await angular(options);
   }
 
   if (options.forAngular === false) {

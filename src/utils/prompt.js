@@ -12,5 +12,5 @@ export default async function prompt(name, choices, message, type = 'list') {
   });
 
   const answers = await inquirer.prompt(questions);
-  return type === 'checkbox' ? answers : answers[name];
+  return answers[name];
 }
