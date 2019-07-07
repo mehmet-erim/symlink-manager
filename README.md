@@ -34,10 +34,16 @@ yarn symlink
 npm run symlink
 ```
 
-Symlink-manager supports Angular. (Only supoorts created with "ng generate lib" libraries)
+Symlink-manager supports Angular. (Only supoorts created with "ng generate lib" libraries).
 
 ```bash
 yarn symlink --angular
+```
+
+Symlink-manager supports Yarn.
+
+```bash
+yarn symlink --yarn
 ```
 
 If you are not using Angular, you must add symlink.config.json for your configuration.
