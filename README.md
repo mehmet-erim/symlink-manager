@@ -1,8 +1,8 @@
-# Symlink Manager
+<h1> Symlink Manager</h1>
 
 Symlink Manager easily manage to symbolic link processes of your dependency packages.
 
-<img src="https://www.photobox.co.uk/my/photo/full?photo_id=501975930459" />
+<img src="https://i.ibb.co/tDFxKZc/Screen-Shot-2019-07-07-at-23-25-16.png" height="auto" width="70%" />
 
 ## Installation & Usage
 
@@ -66,5 +66,6 @@ symlink.config.json example:
 }
 ```
 
-For more
-<a href="">See the examples</a>
+For more:
+<br>
+<a href="https://github.com/mehmet-erim/symlink-manager/tree/master/examples">See the examples</a>
