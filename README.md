@@ -81,8 +81,8 @@ For more:
 - After 6th step (<a href="https://github.com/mehmet-erim/symlink-manager/tree/master/examples/angular">Check the 6 steps</a>), run `ng build core --watch`
 - Open new terminal window and go dist/core (`cd dist/core`)
 - Run `npm link`
-- Go back to main folder (`cd ../../)
-- Run `npm link @symlink/core``
+- Go back to main folder (`cd ../../`)
+- Run `npm link @symlink/core`
 
 Repeat it for every package.
 

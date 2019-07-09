@@ -65,8 +65,8 @@ If you see an error while building with AOT Compiler (prod build), try to add fo
 - After 6th step, run `ng build core --watch`
 - Open new terminal window and go dist/core (`cd dist/core`)
 - Run `npm link`
-- Go back to main folder (`cd ../../)
-- Run `npm link @symlink/core``
+- Go back to main folder (`cd ../../`)
+- Run `npm link @symlink/core`
 
 Repeat it for every package.
 
