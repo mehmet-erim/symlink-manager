@@ -34,7 +34,7 @@ Paths after renaming:
 }
 ```
 
-Now, the project ready for symbolic link. If you are do not want to use symlink-manager, look at the <a href="#wiki-Without-symlink-manager">here</a>
+Now, the project ready for symbolic link. If you are do not want to use symlink-manager, look at the <a href="#Without-symlink-manager">here</a>
 
 ### 7. npm install symlink-manager --save-dev
 
