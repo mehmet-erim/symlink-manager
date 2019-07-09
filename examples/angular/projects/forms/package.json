@@ -1,5 +1,5 @@
 {
-  "name": "forms",
+  "name": "@symlink/forms",
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^8.0.3",

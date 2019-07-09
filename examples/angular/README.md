@@ -1,27 +1,76 @@
-# SymlinkExample
+<h1> Symlink Angular Example </h1>
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.0.3.
+<h2> How to create this example application?</h2>
 
-## Development server
+### 1. ng new symlink-example
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+### 2. ng generate lib core
 
-## Code scaffolding
+### 3. Go to projects/core/package.json then rename projectName to @symlink/core
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+### 4. Go to projects/core/ng-package.json then add the following line
 
-## Build
+```js
+{
+  // bottom of file
+  "deleteDestPath": false
+}
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+### 5. Open the package.json then add following line to dependencies manually. If you are published your package, you can install with npm.
 
-## Running unit tests
+```bash
+`"@symlink/core": "0.0.1"`
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### 6. Rename paths in the tsconfig.json
 
-## Running end-to-end tests
+Paths after renaming:
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+```json
+"paths": {
+  "@symlink/core": ["dist/core"],
+  "@symlink/core/*": ["dist/core/*"]
+}
+```
 
-## Further help
+Now, the project ready for symbolic link. If you are do not want to use symlink-manager, look at the <a href="#wiki-Without-symlink-manager">here</a>
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+### 7. npm install symlink-manager --save-dev
+
+### 8. Add to following line to your scripts in package.json
+
+```json
+"scripts": {
+  // ...
+  "symlink": "symlink --angular"
+}
+```
+
+### 9. Run following command `npm run symlink` then choose Link. After choose the @symlink/core package.
+
+Thats it! symlink-manager is very simple to use. But the Angular configuration a bit more.
+
+If you see an error while building with AOT Compiler (prod build), try to add following line to your tsconfig.app.json file.
+
+```js
+"compilerOptions": {
+  // ...
+  "paths": {}
+}
+```
+
+## Without symlink-manager
+
+- After 6th step, run `ng build core --watch`
+- Open new terminal window and go dist/core (`cd dist/core`)
+- Run `npm link`
+- Go back to main folder (`cd ../../)
+- Run `npm link @symlink/core``
+
+Repeat it for every package.
+
+Do not forget, symlink-manager do this automatically. Symlink-manager can create symbolic link a lot of packages in one terminal window
+
+<br>
+<span>Angular CLI version: 8.0.3 </span>

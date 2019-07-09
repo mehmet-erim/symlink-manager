@@ -1,19 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'lib-common',
+  selector: 'symlink-common',
   template: `
     <p>
       common works!
     </p>
   `,
-  styles: []
+  styles: [],
 })
 export class CommonComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

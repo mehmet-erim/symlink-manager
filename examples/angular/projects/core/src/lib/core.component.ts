@@ -1,19 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'lib-core',
+  selector: 'symlink-core',
   template: `
     <p>
-      core works!
+      core works!!!!!!
     </p>
   `,
-  styles: []
+  styles: [],
 })
 export class CoreComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

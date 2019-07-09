@@ -1,19 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'lib-forms',
+  selector: 'symlink-forms',
   template: `
     <p>
       forms works!
     </p>
   `,
-  styles: []
+  styles: [],
 })
 export class FormsComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }

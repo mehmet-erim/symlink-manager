@@ -74,4 +74,16 @@ symlink.config.json example:
 
 For more:
 <br>
-<a href="https://github.com/mehmet-erim/symlink-manager/tree/master/examples">See the examples</a>
+<a href="https://github.com/mehmet-erim/symlink-manager/tree/master/examples/angular">See the Angular example project and document</a>
+
+## Without symlink-manager for Angular
+
+- After 6th step (<a href="https://github.com/mehmet-erim/symlink-manager/tree/master/examples/angular">Check the 6 steps</a>), run `ng build core --watch`
+- Open new terminal window and go dist/core (`cd dist/core`)
+- Run `npm link`
+- Go back to main folder (`cd ../../)
+- Run `npm link @symlink/core``
+
+Repeat it for every package.
+
+Do not forget, symlink-manager do this automatically. Symlink-manager can create symbolic link a lot of packages in one terminal window
