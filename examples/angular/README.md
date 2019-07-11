@@ -2,13 +2,13 @@
 
 <h2> How to create this example application?</h2>
 
-### 1. ng new symlink-example
+1. ng new symlink-example
 
-### 2. ng generate lib core
+2. ng generate lib core
 
-### 3. Go to projects/core/package.json then rename projectName to @symlink/core
+3. Go to projects/core/package.json then rename projectName to @symlink/core
 
-### 4. Go to projects/core/ng-package.json then add the following line
+4. Go to projects/core/ng-package.json then add the following line
 
 ```js
 {
@@ -17,13 +17,13 @@
 }
 ```
 
-### 5. Open the package.json then add following line to dependencies manually. If you are published your package, you can install with npm.
+5. Open the package.json then add following line to dependencies manually. If you are published your package, you can install with npm.
 
 ```bash
 `"@symlink/core": "0.0.1"`
 ```
 
-### 6. Rename paths in the tsconfig.json
+6. Rename paths in the tsconfig.json
 
 Paths after renaming:
 
@@ -36,9 +36,9 @@ Paths after renaming:
 
 Now, the project ready for symbolic link. If you are do not want to use symlink-manager, look at the <a href="#Without-symlink-manager">here</a>
 
-### 7. npm install symlink-manager --save-dev
+7. npm install symlink-manager --save-dev
 
-### 8. Add to following line to your scripts in package.json
+8. Add to following line to your scripts in package.json
 
 ```json
 "scripts": {
@@ -47,7 +47,7 @@ Now, the project ready for symbolic link. If you are do not want to use symlink-
 }
 ```
 
-### 9. Run following command `npm run symlink` then choose Link. After choose the @symlink/core package.
+9. Run following command `npm run symlink` then choose Link. After choose the @symlink/core package.
 
 Thats it! symlink-manager is very simple to use. But the Angular configuration a bit more.
 

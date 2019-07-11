@@ -37,14 +37,19 @@ export default async function(options, config) {
 
     spinner.start();
 
+    const buildCommandArr = (pack.buildCommand || '').split(' ');
+
     if (options.command === 'link') {
       if (pack.buildCommand) {
         try {
-          await execa(pack.buildCommand, null, { cwd: pack.buildCommandRunPath || './' });
+          await execa(buildCommandArr[0], buildCommandArr.slice(1), { cwd: pack.buildCommandRunPath || './' });
           Log.success(`\n${packName} successfully built.`);
         } catch (error) {
           spinner.stop();
-          await execa(pack.buildCommand, null, { cwd: pack.buildCommandRunPath || './', stdio: 'inherit' });
+          await execa(buildCommandArr[0], buildCommandArr.slice(1), {
+            cwd: pack.buildCommandRunPath || './',
+            stdio: 'inherit',
+          });
           process.exit(1);
         }
       }
@@ -63,16 +68,19 @@ export default async function(options, config) {
 
       if (pack.buildCommand) {
         Log.info(`${packName} is watching...`);
-        chokidar.watch(path.normalize(pack.libraryFolderPath), { ignored: /node_modules/ }).on(
+        chokidar.watch(path.normalize(pack.libraryFolderPath), { ignored: /node_modules|dist/ }).on(
           'change',
           _.debounce(async () => {
             Log.info(`\n${packName} build has been started.`);
 
             try {
-              await execa(pack.buildCommand, null, { cwd: pack.buildCommandRunPath || './' });
+              await execa(buildCommandArr[0], buildCommandArr.slice(1), { cwd: pack.buildCommandRunPath || './' });
             } catch (error) {
               Log.error(error);
-              await execa(pack.buildCommand, null, { cwd: pack.buildCommandRunPath || './', stdio: 'inherit' });
+              await execa(buildCommandArr[0], buildCommandArr.slice(1), {
+                cwd: pack.buildCommandRunPath || './',
+                stdio: 'inherit',
+              });
               return;
             }
 

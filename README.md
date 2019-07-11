@@ -60,6 +60,7 @@ symlink.config.json example:
       "libraryFolderPath": "packages/core",
       // required
       // this folder for symbolic link. You may enter the same value as libraryFolderPath.
+      // linkFolderPath folder must have package.json.
       "linkFolderPath": "dist/core",
       // optional
       // your build command.
