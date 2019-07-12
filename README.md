@@ -79,6 +79,7 @@ symlink.config.json example:
 For more:
 <br>
 <a href="https://github.com/mehmet-erim/symlink-manager/tree/master/examples/angular">See the Angular example project and document</a>
+<br>
 <a href="https://github.com/mehmet-erim/symlink-manager/tree/master/examples/react">See the React example project and document</a>
 
 ## Without symlink-manager for Angular
