@@ -68,7 +68,10 @@ export default async function(options, config) {
 
       if (pack.buildCommand) {
         Log.info(`${packName} is watching...`);
-        chokidar.watch(path.normalize(pack.libraryFolderPath), { ignored: /node_modules|dist/ }).on(
+
+        const ignored = pack.exclude && pack.exclude.length ? new RegExp(pack.exclude.join('|')) : null;
+
+        chokidar.watch(path.normalize(pack.libraryFolderPath), { ignored }).on(
           'change',
           _.debounce(async () => {
             Log.info(`\n${packName} build has been started.`);

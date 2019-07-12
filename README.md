@@ -67,7 +67,10 @@ symlink.config.json example:
       "buildCommand": "ng build core",
       // optional
       // output -> cd packages/core && ng build core
-      "buildCommandRunPath": "packages/core"
+      "buildCommandRunPath": "packages/core",
+      // optional
+      // symlink-manager doesn't watch these folders
+      "exclude": ["node_modules", "dist"]
     }
   ]
 }

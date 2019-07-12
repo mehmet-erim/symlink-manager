@@ -5,7 +5,8 @@
       "libraryFolderPath": "packages/core",
       "linkFolderPath": "dist/core",
       "buildCommand": "ng build core",
-      "buildCommandRunPath": "./"
+      "buildCommandRunPath": "./",
+      "exclude": ["node_modules", "dist"]
     }
   ]
 }

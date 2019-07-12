@@ -79,6 +79,7 @@ export async function cli(args) {
               linkFolderPath: 'dist/core',
               buildCommand: 'ng build core',
               buildCommandRunPath: './',
+              exclude: ['node_modules', 'dist'],
             },
           ],
         },
