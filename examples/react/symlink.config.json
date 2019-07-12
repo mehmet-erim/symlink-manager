@@ -1,0 +1,12 @@
+{
+  "yarn": true,
+  "packages": [
+    {
+      "libraryFolderPath": "packages/symlink-react-core",
+      "linkFolderPath": "packages/symlink-react-core/dist",
+      "buildCommand": "yarn build",
+      "buildCommandRunPath": "packages/symlink-react-core",
+      "exclude": ["node_modules", "dist"]
+    }
+  ]
+}
