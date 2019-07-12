@@ -79,10 +79,11 @@ symlink.config.json example:
 For more:
 <br>
 <a href="https://github.com/mehmet-erim/symlink-manager/tree/master/examples/angular">See the Angular example project and document</a>
+<a href="https://github.com/mehmet-erim/symlink-manager/tree/master/examples/react">See the React example project and document</a>
 
 ## Without symlink-manager for Angular
 
-- After 6th step (<a href="https://github.com/mehmet-erim/symlink-manager/tree/master/examples/angular">Check the 6 steps</a>), run `ng build core --watch`
+- After 5th step (<a href="https://github.com/mehmet-erim/symlink-manager/tree/master/examples/angular">Check the 5 steps in Angular Example</a>), run `ng build core --watch`
 - Open new terminal window and go dist/core (`cd dist/core`)
 - Run `npm link`
 - Go back to main folder (`cd ../../`)

@@ -17,13 +17,7 @@
 }
 ```
 
-5. Open the package.json then add following line to dependencies manually. If you are published your package, you can install with npm.
-
-```bash
-`"@symlink/core": "0.0.1"`
-```
-
-6. Rename paths in the tsconfig.json
+5. Rename paths in the tsconfig.json
 
 Paths after renaming:
 
@@ -36,15 +30,21 @@ Paths after renaming:
 
 Now, the project ready for symbolic link. If you are do not want to use symlink-manager, look at the <a href="#Without-symlink-manager">here</a>
 
-7. npm install symlink-manager --save-dev
+6. npm install symlink-manager --save-dev
 
-8. Add to following line to your scripts in package.json
+7. Add to following line to your scripts in package.json
 
 ```json
 "scripts": {
   // ...
   "symlink": "symlink --angular"
 }
+```
+
+8. Open the package.json then add following line to dependencies manually. If you are published your package, you can install with npm.
+
+```bash
+`"@symlink/core": "0.0.1"`
 ```
 
 9. Run following command `npm run symlink` then choose Link. After choose the @symlink/core package.
@@ -62,7 +62,7 @@ If you see an error while building with AOT Compiler (prod build), try to add fo
 
 ## Without symlink-manager
 
-- After 6th step, run `ng build core --watch`
+- After 5th step, run `ng build core --watch`
 - Open new terminal window and go dist/core (`cd dist/core`)
 - Run `npm link`
 - Go back to main folder (`cd ../../`)
