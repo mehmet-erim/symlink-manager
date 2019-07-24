@@ -6,6 +6,7 @@ import path from 'path';
 import execa from 'execa';
 import * as _ from 'lodash';
 import chokidar from 'chokidar';
+import copy from './utils/copy';
 
 export default async function(options) {
   let angularPath = ANGULAR_FILE_PATH;
@@ -70,7 +71,7 @@ export default async function(options) {
   const packageManager = options.yarn ? 'yarn' : 'npm';
   selectedPackages.forEach(async packName => {
     const { projectName, outputFolderPath, root } = libraries.find(library => library.packageName === packName);
-    if (options.command === 'link') {
+    if (options.command === 'link' || options.command === 'copy') {
       try {
         spinner.start();
 
@@ -81,13 +82,22 @@ export default async function(options) {
           process.exit(1);
         }
 
-        await execa(packageManager, ['link'], { cwd: outputFolderPath });
-        await execa(packageManager, ['link', packName]);
+        if (options.command === 'link') {
+          await execa(packageManager, ['link'], { cwd: outputFolderPath });
+          await execa(packageManager, ['link', packName]);
+        } else if (options.command === 'copy') {
+          await copy(outputFolderPath);
+        }
 
         spinner.stop();
 
         Log.success(`\n${packName} successfully built.`);
-        Log.success(`Symbolic link to ${packName} is successfully created.`);
+
+        if (options.command === 'link') {
+          Log.success(`Symbolic link to ${packName} is successfully created.`);
+        } else if (options.command === 'copy') {
+          Log.success(`${packName} is successfully copied to node_modules.`);
+        }
 
         Log.info(`${packName} is watching...`);
         chokidar.watch(root, { ignored: /node_modules/ }).on(
