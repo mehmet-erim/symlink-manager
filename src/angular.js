@@ -1,12 +1,14 @@
+import chokidar from 'chokidar';
+import execa from 'execa';
 import fse from 'fs-extra';
+import * as _ from 'lodash';
+import path from 'path';
+import { from, of, Subject } from 'rxjs';
+import { switchMap, take, takeUntil } from 'rxjs/operators';
 import { ANGULAR_FILE_PATH } from './utils/config';
+import copy from './utils/copy';
 import { Log } from './utils/log';
 import prompt from './utils/prompt';
-import path from 'path';
-import execa from 'execa';
-import * as _ from 'lodash';
-import chokidar from 'chokidar';
-import copy from './utils/copy';
 
 export default async function(options) {
   let angularPath = ANGULAR_FILE_PATH;
@@ -78,7 +80,8 @@ export default async function(options) {
         try {
           await build(packageManager, projectName);
         } catch (error) {
-          await build(packageManager, projectName, { stdio: 'inherit' });
+          spinner.stop();
+          Log.error(error.stderr);
           process.exit(1);
         }
 
@@ -100,20 +103,35 @@ export default async function(options) {
         }
 
         Log.info(`${packName} is watching...`);
+        let destroy$ = new Subject();
+        let subscribe = {};
         chokidar.watch(root, { ignored: /node_modules/ }).on(
           'change',
           _.debounce(async () => {
-            Log.info(`\n${packName} build has been started.`);
-
-            try {
-              await build(packageManager, projectName);
-            } catch (error) {
-              Log.error(error);
-              await build(packageManager, projectName, { stdio: 'inherit' });
-              return;
+            if (subscribe.closed === false) {
+              destroy$.next();
+              Log.info(`${packName} build process stopped.`);
             }
 
-            Log.success(`${packName} successfully built.`);
+            Log.info(`\n${packName} build has been started.`);
+
+            subscribe = from(build(packageManager, projectName))
+              .pipe(
+                switchMap(() => (options.command === 'copy' ? from(copy(outputFolderPath)) : of(null))),
+                takeUntil(destroy$),
+                take(1),
+              )
+              .subscribe({
+                next: () => {
+                  Log.success(`${packName} successfully built.`);
+                  if (options.command === 'copy') {
+                    Log.success(`The output files successfully copied.`);
+                  }
+                },
+                error: error => {
+                  Log.error(error.stderr);
+                },
+              });
           }, 500),
         );
       } catch (err) {
