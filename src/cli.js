@@ -37,8 +37,14 @@ export async function cli(args) {
     options.yarn = config.yarn || IS_EXIST_YARN_LOCK;
   }
 
-  if (!(options.command.toLowerCase() === 'link' || options.command.toLowerCase() === 'unlink')) {
-    options.command = (await prompt('command', ['Link', 'Unlink'], 'Please pick a command')).toLowerCase();
+  if (
+    !(
+      options.command.toLowerCase() === 'link' ||
+      options.command.toLowerCase() === 'unlink' ||
+      options.command.toLowerCase() === 'copy'
+    )
+  ) {
+    options.command = (await prompt('command', ['Link', 'Unlink', 'Copy'], 'Please pick a command')).toLowerCase();
   }
 
   if (config.packages && config.packages.length && !options.angular) {

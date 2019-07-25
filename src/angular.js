@@ -1,11 +1,14 @@
+import chokidar from 'chokidar';
+import execa from 'execa';
 import fse from 'fs-extra';
+import * as _ from 'lodash';
+import path from 'path';
+import { from, of, Subject } from 'rxjs';
+import { switchMap, take, takeUntil } from 'rxjs/operators';
 import { ANGULAR_FILE_PATH } from './utils/config';
+import copy from './utils/copy';
 import { Log } from './utils/log';
 import prompt from './utils/prompt';
-import path from 'path';
-import execa from 'execa';
-import * as _ from 'lodash';
-import chokidar from 'chokidar';
 
 export default async function(options) {
   let angularPath = ANGULAR_FILE_PATH;
@@ -70,40 +73,65 @@ export default async function(options) {
   const packageManager = options.yarn ? 'yarn' : 'npm';
   selectedPackages.forEach(async packName => {
     const { projectName, outputFolderPath, root } = libraries.find(library => library.packageName === packName);
-    if (options.command === 'link') {
+    if (options.command === 'link' || options.command === 'copy') {
       try {
         spinner.start();
 
         try {
           await build(packageManager, projectName);
         } catch (error) {
-          await build(packageManager, projectName, { stdio: 'inherit' });
+          spinner.stop();
+          Log.error(error.stderr);
           process.exit(1);
         }
 
-        await execa(packageManager, ['link'], { cwd: outputFolderPath });
-        await execa(packageManager, ['link', packName]);
+        if (options.command === 'link') {
+          await execa(packageManager, ['link'], { cwd: outputFolderPath });
+          await execa(packageManager, ['link', packName]);
+        } else if (options.command === 'copy') {
+          await copy(outputFolderPath);
+        }
 
         spinner.stop();
 
         Log.success(`\n${packName} successfully built.`);
-        Log.success(`Symbolic link to ${packName} is successfully created.`);
+
+        if (options.command === 'link') {
+          Log.success(`Symbolic link to ${packName} is successfully created.`);
+        } else if (options.command === 'copy') {
+          Log.success(`${packName} is successfully copied to node_modules.`);
+        }
 
         Log.info(`${packName} is watching...`);
+        let destroy$ = new Subject();
+        let subscribe = {};
         chokidar.watch(root, { ignored: /node_modules/ }).on(
           'change',
           _.debounce(async () => {
-            Log.info(`\n${packName} build has been started.`);
-
-            try {
-              await build(packageManager, projectName);
-            } catch (error) {
-              Log.error(error);
-              await build(packageManager, projectName, { stdio: 'inherit' });
-              return;
+            if (subscribe.closed === false) {
+              destroy$.next();
+              Log.info(`${packName} build process stopped.`);
             }
 
-            Log.success(`${packName} successfully built.`);
+            Log.info(`\n${packName} build has been started.`);
+
+            subscribe = from(build(packageManager, projectName))
+              .pipe(
+                switchMap(() => (options.command === 'copy' ? from(copy(outputFolderPath)) : of(null))),
+                takeUntil(destroy$),
+                take(1),
+              )
+              .subscribe({
+                next: () => {
+                  Log.success(`${packName} successfully built.`);
+                  if (options.command === 'copy') {
+                    Log.success(`The output files successfully copied.`);
+                  }
+                },
+                error: error => {
+                  Log.error(error.stderr);
+                },
+              });
           }, 500),
         );
       } catch (err) {

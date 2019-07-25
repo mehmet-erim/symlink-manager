@@ -5,6 +5,9 @@ import chokidar from 'chokidar';
 import { Log } from './utils/log';
 import * as _ from 'lodash';
 import path from 'path';
+import copy from './utils/copy';
+import { Subject, from, of } from 'rxjs';
+import { switchMap, takeUntil, take } from 'rxjs/operators';
 
 export default async function(options, config) {
   const packageNames = getPackageNames(config);
@@ -39,24 +42,25 @@ export default async function(options, config) {
 
     const buildCommandArr = (pack.buildCommand || '').split(' ');
 
-    if (options.command === 'link') {
+    if (options.command === 'link' || options.command === 'copy') {
       if (pack.buildCommand) {
         try {
           await execa(buildCommandArr[0], buildCommandArr.slice(1), { cwd: pack.buildCommandRunPath || './' });
           Log.success(`\n${packName} successfully built.`);
         } catch (error) {
           spinner.stop();
-          await execa(buildCommandArr[0], buildCommandArr.slice(1), {
-            cwd: pack.buildCommandRunPath || './',
-            stdio: 'inherit',
-          });
+          Log.error(error.stderr);
           process.exit(1);
         }
       }
 
       try {
-        await execa(packageManager, ['link'], { cwd: pack.linkFolderPath });
-        await execa(packageManager, ['link', packName]);
+        if (options.command === 'link') {
+          await execa(packageManager, ['link'], { cwd: pack.linkFolderPath });
+          await execa(packageManager, ['link', packName]);
+        } else if (options.command === 'copy') {
+          await copy(pack.linkFolderPath);
+        }
       } catch (error) {
         spinner.stop();
         Log.error(`\nAn error occured. While linking dependency. Error: ${error}`);
@@ -64,30 +68,49 @@ export default async function(options, config) {
       }
 
       spinner.stop();
-      Log.success(`\nSymbolic link to ${packName} is successfully created.`);
+
+      if (options.command === 'link') {
+        Log.success(`Symbolic link to ${packName} is successfully created.`);
+      } else if (options.command === 'copy') {
+        Log.success(`${packName} is successfully copied to node_modules.`);
+      }
 
       if (pack.buildCommand) {
         Log.info(`${packName} is watching...`);
+        let destroy$ = new Subject();
+        let subscribe = {};
 
         const ignored = pack.exclude && pack.exclude.length ? new RegExp(pack.exclude.join('|')) : null;
 
         chokidar.watch(path.normalize(pack.libraryFolderPath), { ignored }).on(
           'change',
           _.debounce(async () => {
-            Log.info(`\n${packName} build has been started.`);
-
-            try {
-              await execa(buildCommandArr[0], buildCommandArr.slice(1), { cwd: pack.buildCommandRunPath || './' });
-            } catch (error) {
-              Log.error(error);
-              await execa(buildCommandArr[0], buildCommandArr.slice(1), {
-                cwd: pack.buildCommandRunPath || './',
-                stdio: 'inherit',
-              });
-              return;
+            if (subscribe.closed === false) {
+              destroy$.next();
+              Log.info(`${packName} build process stopped.`);
             }
 
-            Log.success(`${packName} successfully built.`);
+            Log.info(`\n${packName} build has been started.`);
+
+            subscribe = from(
+              execa(buildCommandArr[0], buildCommandArr.slice(1), { cwd: pack.buildCommandRunPath || './' }),
+            )
+              .pipe(
+                switchMap(() => (options.command === 'copy' ? from(copy(pack.linkFolderPath)) : of(null))),
+                takeUntil(destroy$),
+                take(1),
+              )
+              .subscribe({
+                next: () => {
+                  Log.success(`${packName} successfully built.`);
+                  if (options.command === 'copy') {
+                    Log.success(`The output files successfully copied.`);
+                  }
+                },
+                error: error => {
+                  Log.error(error.stderr);
+                },
+              });
           }, 500),
         );
       }
