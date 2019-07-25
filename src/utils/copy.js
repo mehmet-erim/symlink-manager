@@ -17,7 +17,7 @@ export default async function(outputFolderPath) {
   }
 
   try {
-    await fse.copy(outputFolderPath, `node_modules/${nodeModulePath}`, {});
+    await fse.copy(outputFolderPath, `node_modules/${nodeModulePath}`, { overwrite: true });
   } catch (error) {
     Log.error(`An error occured. While copying process. Error: ${error}`);
   }
