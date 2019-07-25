@@ -19,12 +19,15 @@ export default async function(options, config) {
     process.exit(1);
   }
 
-  const selectedPackages = await prompt(
-    'packages',
-    packageNames,
-    'Please choose packages for create symbolic link:',
-    'checkbox',
-  );
+  let message = '';
+  if (options.command === 'link') {
+    message = 'create symbolic link';
+  } else if (options.command === 'link') {
+    message = 'remove symbolic link';
+  } else if (options.command === 'copy') {
+    message = 'copy';
+  }
+  const selectedPackages = await prompt('packages', packageNames, `Please choose packages for ${message}:`, 'checkbox');
 
   if (!selectedPackages.length) {
     Log.error('You must choose at least one package');
