@@ -34,7 +34,13 @@ yarn symlink
 npm run symlink
 ```
 
-Symlink-manager supports Angular. (Only supoorts created with "ng generate lib" libraries).
+| Command | Description                                                         |
+| ------- | ------------------------------------------------------------------- |
+| Link    | Creates symbolic link for selected packages                         |
+| Unlink  | Removes symbolic link for linked packages                           |
+| Copy    | Copies link folder into node_modules directly without symbolic link |
+
+Symlink-manager supports Angular. (Only supoorts created with `ng generate lib` libraries).
 
 ```bash
 yarn symlink --angular
