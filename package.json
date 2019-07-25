@@ -48,6 +48,7 @@
     "inquirer-file-tree-selection-prompt": "^1.0.2",
     "kleur": "^3.0.3",
     "lodash": "^4.17.11",
-    "ora": "^3.4.0"
+    "ora": "^3.4.0",
+    "rxjs": "^6.5.2"
   }
 }
