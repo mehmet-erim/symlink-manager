@@ -1,5 +1,6 @@
 import fse from 'fs-extra';
 import { Log } from './log';
+import * as path from 'path';
 
 export default async function(outputFolderPath) {
   const packageJson = await fse.readJSON(`${outputFolderPath}/package.json`);
@@ -12,14 +13,15 @@ export default async function(outputFolderPath) {
     nodeModulePath = `${nameObj.scope}/${nameObj.name}`;
   }
 
-  if (fse.existsSync(`node_modules/${nodeModulePath}`)) {
-    await fse.remove(`node_modules/${nodeModulePath}`);
+  if (fse.existsSync(path.resolve(`node_modules/${nodeModulePath}`))) {
+    await fse.remove(path.resolve(`node_modules/${nodeModulePath}`));
   }
 
   try {
-    await fse.copy(outputFolderPath, `node_modules/${nodeModulePath}`, { overwrite: true });
+    await fse.copy(path.resolve(outputFolderPath), path.resolve(`node_modules/${nodeModulePath}`), { overwrite: true });
   } catch (error) {
     Log.error(`An error occured. While copying process. Error: ${error}`);
+    process.exit(1);
   }
 }
 
