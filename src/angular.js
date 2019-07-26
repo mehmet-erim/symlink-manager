@@ -132,7 +132,7 @@ export default async function(options) {
                   Log.error(error.stderr);
                 },
               });
-          }, 500),
+          }, 200),
         );
       } catch (err) {
         spinner.stop();

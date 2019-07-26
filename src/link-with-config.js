@@ -114,7 +114,7 @@ export default async function(options, config) {
                   Log.error(error.stderr);
                 },
               });
-          }, 500),
+          }, 200),
         );
       }
     } else {
