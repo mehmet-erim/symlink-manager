@@ -52,6 +52,12 @@ Symlink-manager supports Yarn.
 yarn symlink --yarn
 ```
 
+Symlink-manager can take your packages on command.
+
+```bash
+yarn symlink --packages my-package-1,my-package-2
+```
+
 If you are not using Angular, you must add symlink.config.json for your configuration.
 
 symlink.config.json example:

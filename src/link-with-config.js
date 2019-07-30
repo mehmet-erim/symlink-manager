@@ -27,7 +27,15 @@ export default async function(options, config) {
   } else if (options.command === 'copy') {
     message = 'copy';
   }
-  const selectedPackages = await prompt('packages', packageNames, `Please choose packages for ${message}:`, 'checkbox');
+
+  let selectedPackages = [];
+  if (options.packages) {
+    selectedPackages = options.packages.filter(pack => packageNames.indexOf((pack || '').toLowerCase()) > -1);
+  }
+
+  if (!selectedPackages.length) {
+    selectedPackages = await prompt('packages', packageNames, `Please choose packages for ${message}:`, 'checkbox');
+  }
 
   if (!selectedPackages.length) {
     Log.error('You must choose at least one package');

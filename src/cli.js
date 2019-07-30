@@ -12,6 +12,7 @@ function parseArgumentsIntoOptions(rawArgs) {
     {
       '--angular': Boolean,
       '--yarn': Boolean,
+      '--packages': String,
       '-a': '--angular',
       '-y': '--yarn',
     },
@@ -22,6 +23,7 @@ function parseArgumentsIntoOptions(rawArgs) {
   return {
     yarn: args['--yarn'],
     angular: args['--angular'],
+    packages: args['--packages'],
     command: args._[0] || '',
   };
 }
@@ -35,6 +37,10 @@ export async function cli(args) {
 
   if (typeof options.yarn === 'undefined') {
     options.yarn = config.yarn || IS_EXIST_YARN_LOCK;
+  }
+
+  if (options.packages) {
+    options.packages = options.packages.split(',').filter(pack => pack);
   }
 
   if (

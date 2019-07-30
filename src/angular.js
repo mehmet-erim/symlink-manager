@@ -58,12 +58,20 @@ export default async function(options) {
     projectName: projectNames[index],
     outputFolderPath: getOutputFolder(library.architect.build.options.project),
   }));
-  const selectedPackages = await prompt(
-    'packages',
-    packageNames,
-    'Please choose packages for create symbolic link:',
-    'checkbox',
-  );
+
+  let selectedPackages = [];
+  if (options.packages) {
+    selectedPackages = options.packages.filter(pack => packageNames.indexOf((pack || '').toLowerCase()) > -1);
+  }
+
+  if (!selectedPackages.length) {
+    selectedPackages = await prompt(
+      'packages',
+      packageNames,
+      'Please choose packages for create symbolic link:',
+      'checkbox',
+    );
+  }
 
   if (!selectedPackages.length) {
     Log.error('You must choose at least one package');
