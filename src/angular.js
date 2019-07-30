@@ -110,6 +110,7 @@ export default async function(options) {
           Log.success(`${packName} is successfully copied to node_modules.`);
         }
 
+        if (options.noWatch) return;
         Log.info(`${packName} is watching...`);
         let destroy$ = new Subject();
         let subscribe = {};

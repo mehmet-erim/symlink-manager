@@ -55,7 +55,7 @@ yarn symlink --yarn
 Symlink-manager can take your packages on command.
 
 ```bash
-yarn symlink --packages my-package-1,my-package-2
+yarn symlink --packages my-package-1,my-package-2 --no-watch
 ```
 
 If you are not using Angular, you must add symlink.config.json for your configuration.

@@ -12,6 +12,7 @@ function parseArgumentsIntoOptions(rawArgs) {
     {
       '--angular': Boolean,
       '--yarn': Boolean,
+      '--no-watch': Boolean,
       '--packages': String,
       '-a': '--angular',
       '-y': '--yarn',
@@ -24,6 +25,7 @@ function parseArgumentsIntoOptions(rawArgs) {
     yarn: args['--yarn'],
     angular: args['--angular'],
     packages: args['--packages'],
+    noWatch: args['--no-watch'],
     command: args._[0] || '',
   };
 }

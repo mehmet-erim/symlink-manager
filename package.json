@@ -1,6 +1,6 @@
 {
   "name": "symlink-manager",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Symlink Manager easily manage to symbolic link processes of your dependency packages.",
   "main": "index.js",
   "scripts": {

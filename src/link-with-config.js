@@ -86,7 +86,7 @@ export default async function(options, config) {
         Log.success(`${packName} is successfully copied to node_modules.`);
       }
 
-      if (pack.buildCommand) {
+      if (pack.buildCommand && !options.noWatch) {
         Log.info(`${packName} is watching...`);
         let destroy$ = new Subject();
         let subscribe = {};
