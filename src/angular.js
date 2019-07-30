@@ -86,7 +86,11 @@ export default async function(options) {
         spinner.start();
 
         try {
-          await build(packageManager, projectName);
+          if (options.syncBuild) {
+            execa.sync(packageManager, [...(packageManager === 'npm' ? ['run'] : []), 'ng', 'build', projectName]);
+          } else {
+            await build(packageManager, projectName);
+          }
         } catch (error) {
           spinner.stop();
           Log.error(error.stderr);
@@ -172,6 +176,6 @@ function getOutputFolder(ngPackagePath) {
   return path.normalize(`${ngPackagePath}/../${ngPackage.dest}`);
 }
 
-async function build(packageManager, projectName, params) {
-  await execa(packageManager, [...(packageManager === 'npm' ? ['run'] : []), 'ng', 'build', projectName], params);
+async function build(packageManager, projectName) {
+  await execa(packageManager, [...(packageManager === 'npm' ? ['run'] : []), 'ng', 'build', projectName]);
 }

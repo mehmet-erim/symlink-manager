@@ -56,7 +56,11 @@ export default async function(options, config) {
     if (options.command === 'link' || options.command === 'copy') {
       if (pack.buildCommand) {
         try {
-          await execa(buildCommandArr[0], buildCommandArr.slice(1), { cwd: pack.buildCommandRunPath || './' });
+          if (options.syncBuild) {
+            execa.sync(buildCommandArr[0], buildCommandArr.slice(1), { cwd: pack.buildCommandRunPath || './' });
+          } else {
+            await execa(buildCommandArr[0], buildCommandArr.slice(1), { cwd: pack.buildCommandRunPath || './' });
+          }
           Log.success(`\n${packName} successfully built.`);
         } catch (error) {
           spinner.stop();

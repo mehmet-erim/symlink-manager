@@ -11,9 +11,10 @@ function parseArgumentsIntoOptions(rawArgs) {
   const args = arg(
     {
       '--angular': Boolean,
-      '--yarn': Boolean,
       '--no-watch': Boolean,
       '--packages': String,
+      '--sync-build': Boolean,
+      '--yarn': Boolean,
       '-a': '--angular',
       '-y': '--yarn',
     },
@@ -22,10 +23,11 @@ function parseArgumentsIntoOptions(rawArgs) {
     },
   );
   return {
-    yarn: args['--yarn'],
     angular: args['--angular'],
-    packages: args['--packages'],
     noWatch: args['--no-watch'],
+    packages: args['--packages'],
+    syncBuild: args['--sync-build'],
+    yarn: args['--yarn'],
     command: args._[0] || '',
   };
 }
