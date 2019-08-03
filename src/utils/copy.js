@@ -2,8 +2,13 @@ import fse from 'fs-extra';
 import { Log } from './log';
 import * as path from 'path';
 
-export default async function(outputFolderPath) {
-  const packageJson = await fse.readJSON(`${outputFolderPath}/package.json`);
+export default async function(outputFolderPath, sync) {
+  let packageJson;
+  if (sync) {
+    packageJson = fse.readJSONSync(`${outputFolderPath}/package.json`);
+  } else {
+    packageJson = await fse.readJSON(`${outputFolderPath}/package.json`);
+  }
   const { name } = packageJson;
   const hasScope = name.indexOf('@') > -1;
 
@@ -14,14 +19,23 @@ export default async function(outputFolderPath) {
   }
 
   if (fse.existsSync(path.resolve(`node_modules/${nodeModulePath}`))) {
-    await fse.remove(path.resolve(`node_modules/${nodeModulePath}`));
+    if (sync) {
+      fse.removeSync(path.resolve(`node_modules/${nodeModulePath}`));
+    } else {
+      await fse.remove(path.resolve(`node_modules/${nodeModulePath}`));
+    }
   }
 
   try {
-    await fse.copy(path.resolve(outputFolderPath), path.resolve(`node_modules/${nodeModulePath}`), { overwrite: true });
+    if (sync) {
+      fse.copySync(path.resolve(outputFolderPath), path.resolve(`node_modules/${nodeModulePath}`), { overwrite: true });
+    } else {
+      await fse.copy(path.resolve(outputFolderPath), path.resolve(`node_modules/${nodeModulePath}`), {
+        overwrite: true,
+      });
+    }
   } catch (error) {
     Log.error(`An error occured. While copying process. Error: ${error}`);
-    process.exit(1);
   }
 }
 

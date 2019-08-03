@@ -82,89 +82,91 @@ export default async function(options) {
   selectedPackages.forEach(async packName => {
     const { projectName, outputFolderPath, root } = libraries.find(library => library.packageName === packName);
     if (options.command === 'link' || options.command === 'copy') {
+      spinner.start();
+
       try {
-        spinner.start();
-
-        try {
-          if (options.syncBuild) {
-            execa.sync(packageManager, [...(packageManager === 'npm' ? ['run'] : []), 'ng', 'build', projectName]);
-          } else {
-            await build(packageManager, projectName);
-          }
-        } catch (error) {
-          spinner.stop();
-          Log.error(error.stderr);
-          process.exit(1);
+        if (options.syncBuild) {
+          execa.sync(packageManager, [...(packageManager === 'npm' ? ['run'] : []), 'ng', 'build', projectName]);
+        } else {
+          await build(packageManager, projectName);
         }
+      } catch (error) {
+        spinner.stop();
+        Log.error(error.stderr);
+        return;
+      }
 
-        if (options.command === 'link') {
+      if (options.command === 'link') {
+        if (options.syncBuild) {
+          execa.sync(packageManager, ['link'], { cwd: outputFolderPath });
+          execa.sync(packageManager, ['link', packName]);
+        } else {
           await execa(packageManager, ['link'], { cwd: outputFolderPath });
           await execa(packageManager, ['link', packName]);
-        } else if (options.command === 'copy') {
+        }
+      } else if (options.command === 'copy') {
+        if (options.syncBuild) {
+          copy(outputFolderPath, true);
+        } else {
           await copy(outputFolderPath);
         }
-
-        spinner.stop();
-
-        Log.success(`\n${packName} successfully built.`);
-
-        if (options.command === 'link') {
-          Log.success(`Symbolic link to ${packName} is successfully created.`);
-        } else if (options.command === 'copy') {
-          Log.success(`${packName} is successfully copied to node_modules.`);
-        }
-
-        if (options.noWatch) return;
-        Log.info(`${packName} is watching...`);
-        let destroy$ = new Subject();
-        let subscribe = {};
-        chokidar.watch(root, { ignored: /node_modules/ }).on(
-          'change',
-          _.debounce(async () => {
-            if (subscribe.closed === false) {
-              destroy$.next();
-              Log.info(`${packName} build process stopped.`);
-            }
-
-            Log.info(`\n${packName} build has been started.`);
-
-            subscribe = from(build(packageManager, projectName))
-              .pipe(
-                switchMap(() => (options.command === 'copy' ? from(copy(outputFolderPath)) : of(null))),
-                takeUntil(destroy$),
-                take(1),
-              )
-              .subscribe({
-                next: () => {
-                  Log.success(`${packName} successfully built.`);
-                  if (options.command === 'copy') {
-                    Log.success(`The output files successfully copied.`);
-                  }
-                },
-                error: error => {
-                  Log.error(error.stderr);
-                },
-              });
-          }, 200),
-        );
-      } catch (err) {
-        spinner.stop();
-        Log.error(err);
-        process.exit(1);
       }
+
+      spinner.stop();
+
+      Log.success(`\n${packName} successfully built.`);
+
+      if (options.command === 'link') {
+        Log.success(`Symbolic link to ${packName} is successfully created.`);
+      } else if (options.command === 'copy') {
+        Log.success(`${packName} is successfully copied to node_modules.`);
+      }
+
+      if (options.noWatch) return;
+      Log.info(`${packName} is watching...`);
+      let destroy$ = new Subject();
+      let subscribe = {};
+      chokidar.watch(root, { ignored: /node_modules/ }).on(
+        'change',
+        _.debounce(async () => {
+          if (subscribe.closed === false) {
+            destroy$.next();
+            Log.info(`${packName} build process stopped.`);
+          }
+
+          Log.info(`\n${packName} build has been started.`);
+
+          subscribe = from(build(packageManager, projectName))
+            .pipe(
+              switchMap(() => (options.command === 'copy' ? from(copy(outputFolderPath)) : of(null))),
+              takeUntil(destroy$),
+              take(1),
+            )
+            .subscribe({
+              next: () => {
+                Log.success(`${packName} successfully built.`);
+                if (options.command === 'copy') {
+                  Log.success(`The output files successfully copied.`);
+                }
+              },
+              error: error => {
+                Log.error(error.stderr);
+              },
+            });
+        }, 200),
+      );
     } else {
       try {
         spinner.start();
 
         await execa(packageManager, ['unlink', packName]);
         await execa(packageManager, ['unlink'], { cwd: outputFolderPath });
-
         spinner.stop();
         Log.info(`\nSymbolic link to ${packName} is successfully deleted.`);
-      } catch (error) {
+      } catch (err) {
         spinner.stop();
-        Log.error(error);
-        process.exit(1);
+        Log.primary(`\n${packName} have not symbolic link`);
+        return;
       }
     }
   });

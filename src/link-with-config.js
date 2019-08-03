@@ -65,21 +65,30 @@ export default async function(options, config) {
         } catch (error) {
           spinner.stop();
           Log.error(error.stderr);
-          process.exit(1);
+          return;
         }
       }
 
       try {
         if (options.command === 'link') {
-          await execa(packageManager, ['link'], { cwd: pack.linkFolderPath });
-          await execa(packageManager, ['link', packName]);
+          if (options.syncBuild) {
+            execa.sync(packageManager, ['link'], { cwd: pack.linkFolderPath });
+            execa.sync(packageManager, ['link', packName]);
+          } else {
+            await execa(packageManager, ['link'], { cwd: pack.linkFolderPath });
+            await execa(packageManager, ['link', packName]);
+          }
         } else if (options.command === 'copy') {
-          await copy(pack.linkFolderPath);
+          if (options.syncBuild) {
+            copy(pack.linkFolderPath, true);
+          } else {
+            await copy(pack.linkFolderPath);
+          }
         }
       } catch (error) {
         spinner.stop();
         Log.error(`\nAn error occured. While linking dependency. Error: ${error}`);
-        process.exit(1);
+        return;
       }
 
       spinner.stop();
@@ -140,8 +149,8 @@ export default async function(options, config) {
         Log.info(`\nSymbolic link to ${packName} is successfully deleted.`);
       } catch (error) {
         spinner.stop();
-        Log.error(error);
-        process.exit(1);
+        Log.primary(`\n${packName} have not symbolic link`);
+        return;
       }
     }
   });
