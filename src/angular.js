@@ -65,7 +65,7 @@ export default async function(options) {
     );
 
   let selectedPackages = [];
-  if (options.packages || !options.allPackages) {
+  if (options.packages && options.packages.length && !options.allPackages) {
     selectedPackages = options.packages.filter(pack => packageNames.indexOf((pack || '').toLowerCase()) > -1);
     logSelectedPackages(selectedPackages);
   } else if (options.allPackages) {
