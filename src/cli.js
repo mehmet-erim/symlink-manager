@@ -13,7 +13,10 @@ function parseArgumentsIntoOptions(rawArgs) {
       '--angular': Boolean,
       '--no-watch': Boolean,
       '--packages': String,
+      '--all-packages': Boolean,
+      '--excluded-packages': String,
       '--sync-build': Boolean,
+      '--sync': Boolean,
       '--yarn': Boolean,
       '-a': '--angular',
       '-y': '--yarn',
@@ -26,7 +29,10 @@ function parseArgumentsIntoOptions(rawArgs) {
     angular: args['--angular'],
     noWatch: args['--no-watch'],
     packages: args['--packages'],
+    excludedPackages: args['--excluded-packages'],
+    allPackages: args['--all-packages'],
     syncBuild: args['--sync-build'],
+    sync: args['--sync'],
     yarn: args['--yarn'],
     command: args._[0] || '',
   };
@@ -38,6 +44,10 @@ export async function cli(args) {
   const config = (await getConfig()) || {};
 
   let options = parseArgumentsIntoOptions(args);
+
+  if (options.sync) {
+    options.syncBuild = true;
+  }
 
   if (typeof options.yarn === 'undefined') {
     options.yarn = config.yarn || IS_EXIST_YARN_LOCK;

@@ -44,9 +44,7 @@ export default async function(options) {
       return fse.readJSONSync(`${library.root}/package.json`).name;
     } catch (error) {
       Log.error(
-        `${
-          library.root
-        }/package.json not found. Did you create the library with "ng g lib" command. Please check your file structure.`,
+        `${library.root}/package.json not found. Did you create the library with "ng g lib" command. Please check your file structure.`,
       );
       return;
     }
@@ -59,9 +57,26 @@ export default async function(options) {
     outputFolderPath: getOutputFolder(library.architect.build.options.project),
   }));
 
+  const logSelectedPackages = selectedPackages =>
+    Log.info(
+      `Selected packages: ${JSON.stringify(selectedPackages)
+        .replace(/\[|\]|\"/g, '')
+        .replace(/\,/g, ', ')}`,
+    );
+
   let selectedPackages = [];
-  if (options.packages) {
+  if (options.packages || !options.allPackages) {
     selectedPackages = options.packages.filter(pack => packageNames.indexOf((pack || '').toLowerCase()) > -1);
+    logSelectedPackages(selectedPackages);
+  } else if (options.allPackages) {
+    selectedPackages = [...packageNames];
+
+    if (options.excludedPackages) {
+      const excluded = options.excludedPackages.split(',');
+      selectedPackages = selectedPackages.filter(x => !excluded.includes(x));
+    }
+
+    logSelectedPackages(selectedPackages);
   }
 
   if (!selectedPackages.length) {

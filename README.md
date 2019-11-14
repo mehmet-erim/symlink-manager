@@ -58,10 +58,16 @@ Symlink-manager can take your packages on command.
 yarn symlink --packages my-package-1,my-package-2 --no-watch
 ```
 
-If building order matters, you can pass --sync-build
+Symlink-manager supports the CI
 
 ```bash
-yarn symlink --sync-build
+yarn symlink copy --angular --all-packages --no-watch --sync --excluded-packages package1,package2
+```
+
+If building order matters, you can pass --sync
+
+```bash
+yarn symlink --sync
 ```
 
 If you are not using Angular, you must add symlink.config.json for your configuration.
