@@ -2,7 +2,7 @@
 
 Symlink Manager easily manage to symbolic link processes of your dependency packages.
 
-<img src="https://i.ibb.co/tDFxKZc/Screen-Shot-2019-07-07-at-23-25-16.png" height="auto" width="70%" />
+![symlink-introducing](https://www.imageupload.net/upload-image/2019/11/28/symlink-introducing.gif)
 
 ## Installation & Usage
 
