@@ -17,7 +17,12 @@ export default async function(options) {
   if (await fse.pathExists(angularPath)) {
     angularJson = await fse.readJSON(angularPath);
   } else {
-    angularPath = await prompt('angularPath', null, 'Please choose your angular.json file', 'file-tree-selection');
+    angularPath = await prompt(
+      'angularPath',
+      null,
+      'Please choose your angular.json file',
+      'file-tree-selection',
+    );
 
     if (!(await fse.pathExists(angularPath))) {
       Log.error('angular.json not found');
@@ -66,7 +71,9 @@ export default async function(options) {
 
   let selectedPackages = [];
   if (options.packages && options.packages.length && !options.allPackages) {
-    selectedPackages = options.packages.filter(pack => packageNames.indexOf((pack || '').toLowerCase()) > -1);
+    selectedPackages = options.packages.filter(
+      pack => packageNames.indexOf((pack || '').toLowerCase()) > -1,
+    );
     logSelectedPackages(selectedPackages);
   } else if (options.allPackages) {
     selectedPackages = [...packageNames];
@@ -95,13 +102,20 @@ export default async function(options) {
   const spinner = Log.spinner('Processing...');
   const packageManager = options.yarn ? 'yarn' : 'npm';
   selectedPackages.forEach(async packName => {
-    const { projectName, outputFolderPath, root } = libraries.find(library => library.packageName === packName);
+    const { projectName, outputFolderPath, root } = libraries.find(
+      library => library.packageName === packName,
+    );
     if (options.command === 'link' || options.command === 'copy') {
       spinner.start();
 
       try {
         if (options.syncBuild) {
-          execa.sync(packageManager, [...(packageManager === 'npm' ? ['run'] : []), 'ng', 'build', projectName]);
+          execa.sync(packageManager, [
+            ...(packageManager === 'npm' ? ['run'] : []),
+            'ng',
+            'build',
+            projectName,
+          ]);
         } else {
           await build(packageManager, projectName);
         }
@@ -132,9 +146,9 @@ export default async function(options) {
       Log.success(`\n${packName} successfully built.`);
 
       if (options.command === 'link') {
-        Log.success(`Symbolic link to ${packName} is successfully created.`);
+        Log.success(`Symbolic link to ${packName} has been successfully created.`);
       } else if (options.command === 'copy') {
-        Log.success(`${packName} is successfully copied to node_modules.`);
+        Log.success(`${packName} has been successfully copied to node_modules.`);
       }
 
       if (options.noWatch) return;
@@ -153,7 +167,9 @@ export default async function(options) {
 
           subscribe = from(build(packageManager, projectName))
             .pipe(
-              switchMap(() => (options.command === 'copy' ? from(copy(outputFolderPath)) : of(null))),
+              switchMap(() =>
+                options.command === 'copy' ? from(copy(outputFolderPath)) : of(null),
+              ),
               takeUntil(destroy$),
               take(1),
             )
@@ -177,7 +193,7 @@ export default async function(options) {
         await execa(packageManager, ['unlink', packName]);
         await execa(packageManager, ['unlink'], { cwd: outputFolderPath });
         spinner.stop();
-        Log.info(`\nSymbolic link to ${packName} is successfully deleted.`);
+        Log.info(`\nSymbolic link to ${packName} has been successfully deleted.`);
       } catch (err) {
         spinner.stop();
         Log.primary(`\n${packName} have not symbolic link`);
@@ -194,5 +210,10 @@ function getOutputFolder(ngPackagePath) {
 }
 
 async function build(packageManager, projectName) {
-  await execa(packageManager, [...(packageManager === 'npm' ? ['run'] : []), 'ng', 'build', projectName]);
+  await execa(packageManager, [
+    ...(packageManager === 'npm' ? ['run'] : []),
+    'ng',
+    'build',
+    projectName,
+  ]);
 }

@@ -30,11 +30,18 @@ export default async function(options, config) {
 
   let selectedPackages = [];
   if (options.packages) {
-    selectedPackages = options.packages.filter(pack => packageNames.indexOf((pack || '').toLowerCase()) > -1);
+    selectedPackages = options.packages.filter(
+      pack => packageNames.indexOf((pack || '').toLowerCase()) > -1,
+    );
   }
 
   if (!selectedPackages.length) {
-    selectedPackages = await prompt('packages', packageNames, `Please choose packages for ${message}:`, 'checkbox');
+    selectedPackages = await prompt(
+      'packages',
+      packageNames,
+      `Please choose packages for ${message}:`,
+      'checkbox',
+    );
   }
 
   if (!selectedPackages.length) {
@@ -57,9 +64,13 @@ export default async function(options, config) {
       if (pack.buildCommand) {
         try {
           if (options.syncBuild) {
-            execa.sync(buildCommandArr[0], buildCommandArr.slice(1), { cwd: pack.buildCommandRunPath || './' });
+            execa.sync(buildCommandArr[0], buildCommandArr.slice(1), {
+              cwd: pack.buildCommandRunPath || './',
+            });
           } else {
-            await execa(buildCommandArr[0], buildCommandArr.slice(1), { cwd: pack.buildCommandRunPath || './' });
+            await execa(buildCommandArr[0], buildCommandArr.slice(1), {
+              cwd: pack.buildCommandRunPath || './',
+            });
           }
           Log.success(`\n${packName} successfully built.`);
         } catch (error) {
@@ -94,9 +105,9 @@ export default async function(options, config) {
       spinner.stop();
 
       if (options.command === 'link') {
-        Log.success(`Symbolic link to ${packName} is successfully created.`);
+        Log.success(`Symbolic link to ${packName} has been successfully created.`);
       } else if (options.command === 'copy') {
-        Log.success(`${packName} is successfully copied to node_modules.`);
+        Log.success(`${packName} has been successfully copied to node_modules.`);
       }
 
       if (pack.buildCommand && !options.noWatch) {
@@ -104,7 +115,8 @@ export default async function(options, config) {
         let destroy$ = new Subject();
         let subscribe = {};
 
-        const ignored = pack.exclude && pack.exclude.length ? new RegExp(pack.exclude.join('|')) : null;
+        const ignored =
+          pack.exclude && pack.exclude.length ? new RegExp(pack.exclude.join('|')) : null;
 
         chokidar.watch(path.normalize(pack.libraryFolderPath), { ignored }).on(
           'change',
@@ -117,10 +129,14 @@ export default async function(options, config) {
             Log.info(`\n${packName} build has been started.`);
 
             subscribe = from(
-              execa(buildCommandArr[0], buildCommandArr.slice(1), { cwd: pack.buildCommandRunPath || './' }),
+              execa(buildCommandArr[0], buildCommandArr.slice(1), {
+                cwd: pack.buildCommandRunPath || './',
+              }),
             )
               .pipe(
-                switchMap(() => (options.command === 'copy' ? from(copy(pack.linkFolderPath)) : of(null))),
+                switchMap(() =>
+                  options.command === 'copy' ? from(copy(pack.linkFolderPath)) : of(null),
+                ),
                 takeUntil(destroy$),
                 take(1),
               )
@@ -146,7 +162,7 @@ export default async function(options, config) {
         await execa(packageManager, ['unlink'], { cwd: pack.linkFolderPath });
 
         spinner.stop();
-        Log.info(`\nSymbolic link to ${packName} is successfully deleted.`);
+        Log.info(`\nSymbolic link to ${packName} has been successfully deleted.`);
       } catch (error) {
         spinner.stop();
         Log.primary(`\n${packName} have not symbolic link`);
@@ -160,7 +176,9 @@ function getPackageNames(config) {
   const names = [];
 
   config.packages.forEach(async pack => {
-    const packageJson = fse.readJSONSync(`${pack.libraryFolderPath}/package.json`, { throws: false });
+    const packageJson = fse.readJSONSync(`${pack.libraryFolderPath}/package.json`, {
+      throws: false,
+    });
 
     if (!packageJson) {
       Log.error(
