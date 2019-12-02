@@ -76,7 +76,7 @@ export async function cli(args) {
     options.angular = await prompt(
       'angular',
       null,
-      'For Angular? (Only supoorts created with "ng generate lib" libraries. If you are not sure, you may choose no.)',
+      'For Angular? (Only supports created with "ng generate lib" libraries. If you are not sure, you may choose no.)',
       'confirm',
     );
   }
