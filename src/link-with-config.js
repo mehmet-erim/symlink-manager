@@ -76,6 +76,7 @@ export default async function(options, config) {
         } catch (error) {
           spinner.stop();
           Log.error(error.stderr);
+          process.exit(1);
           return;
         }
       }
@@ -99,6 +100,7 @@ export default async function(options, config) {
       } catch (error) {
         spinner.stop();
         Log.error(`\nAn error occured. While linking dependency. Error: ${error}`);
+        process.exit(1);
         return;
       }
 

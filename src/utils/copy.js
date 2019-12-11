@@ -28,14 +28,21 @@ export default async function(outputFolderPath, sync) {
 
   try {
     if (sync) {
-      fse.copySync(path.resolve(outputFolderPath), path.resolve(`node_modules/${nodeModulePath}`), { overwrite: true });
-    } else {
-      await fse.copy(path.resolve(outputFolderPath), path.resolve(`node_modules/${nodeModulePath}`), {
+      fse.copySync(path.resolve(outputFolderPath), path.resolve(`node_modules/${nodeModulePath}`), {
         overwrite: true,
       });
+    } else {
+      await fse.copy(
+        path.resolve(outputFolderPath),
+        path.resolve(`node_modules/${nodeModulePath}`),
+        {
+          overwrite: true,
+        },
+      );
     }
   } catch (error) {
     Log.error(`An error occured. While copying process. Error: ${error}`);
+    process.exit(1);
   }
 }
 

@@ -122,6 +122,7 @@ export default async function(options) {
       } catch (error) {
         spinner.stop();
         Log.error(error.stderr);
+        process.exit(1);
         return;
       }
 
