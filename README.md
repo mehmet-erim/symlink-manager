@@ -2,7 +2,7 @@
 
 Symlink Manager easily manage to symbolic link processes of your dependency packages.
 
-<img src="https://i.ibb.co/tDFxKZc/Screen-Shot-2019-07-07-at-23-25-16.png" height="auto" width="70%" />
+![symlink-introducing](https://www.imageupload.net/upload-image/2019/11/28/symlink-introducing.gif)
 
 ## Installation & Usage
 
@@ -40,7 +40,7 @@ npm run symlink
 | Unlink  | Removes symbolic link for linked packages                           |
 | Copy    | Copies link folder into node_modules directly without symbolic link |
 
-Symlink-manager supports Angular. (Only supoorts created with `ng generate lib` libraries).
+Symlink-manager supports Angular. (Only supports created with `ng generate lib` libraries).
 
 ```bash
 yarn symlink --angular
