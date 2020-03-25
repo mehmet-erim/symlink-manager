@@ -17,12 +17,7 @@ export default async function(options) {
   if (await fse.pathExists(angularPath)) {
     angularJson = await fse.readJSON(angularPath);
   } else {
-    angularPath = await prompt(
-      'angularPath',
-      null,
-      'Please choose your angular.json file',
-      'file-tree-selection',
-    );
+    angularPath = await prompt('angularPath', null, 'Please choose your angular.json file', 'file-tree-selection');
 
     if (!(await fse.pathExists(angularPath))) {
       Log.error('angular.json not found');
@@ -71,9 +66,7 @@ export default async function(options) {
 
   let selectedPackages = [];
   if (options.packages && options.packages.length && !options.allPackages) {
-    selectedPackages = options.packages.filter(
-      pack => packageNames.indexOf((pack || '').toLowerCase()) > -1,
-    );
+    selectedPackages = options.packages.filter(pack => packageNames.indexOf((pack || '').toLowerCase()) > -1);
     logSelectedPackages(selectedPackages);
   } else if (options.allPackages) {
     selectedPackages = [...packageNames];
@@ -102,20 +95,13 @@ export default async function(options) {
   const spinner = Log.spinner('Processing...');
   const packageManager = options.yarn ? 'yarn' : 'npm';
   selectedPackages.forEach(async packName => {
-    const { projectName, outputFolderPath, root } = libraries.find(
-      library => library.packageName === packName,
-    );
+    const { projectName, outputFolderPath, root } = libraries.find(library => library.packageName === packName);
     if (options.command === 'link' || options.command === 'copy') {
       spinner.start();
 
       try {
         if (options.syncBuild) {
-          execa.sync(packageManager, [
-            ...(packageManager === 'npm' ? ['run'] : []),
-            'ng',
-            'build',
-            projectName,
-          ]);
+          execa.sync(packageManager, [...(packageManager === 'npm' ? ['run'] : []), 'ng', 'build', projectName]);
         } else {
           await build(packageManager, projectName);
         }
@@ -127,13 +113,8 @@ export default async function(options) {
       }
 
       if (options.command === 'link') {
-        if (options.syncBuild) {
-          execa.sync(packageManager, ['link'], { cwd: outputFolderPath });
-          execa.sync(packageManager, ['link', packName]);
-        } else {
-          await execa(packageManager, ['link'], { cwd: outputFolderPath });
-          await execa(packageManager, ['link', packName]);
-        }
+        execa.sync(packageManager, ['link'], { cwd: outputFolderPath });
+        execa.sync(packageManager, ['link', packName]);
       } else if (options.command === 'copy') {
         if (options.syncBuild) {
           copy(outputFolderPath, true);
@@ -168,9 +149,7 @@ export default async function(options) {
 
           subscribe = from(build(packageManager, projectName))
             .pipe(
-              switchMap(() =>
-                options.command === 'copy' ? from(copy(outputFolderPath)) : of(null),
-              ),
+              switchMap(() => (options.command === 'copy' ? from(copy(outputFolderPath)) : of(null))),
               takeUntil(destroy$),
               take(1),
             )
@@ -211,10 +190,5 @@ function getOutputFolder(ngPackagePath) {
 }
 
 async function build(packageManager, projectName) {
-  await execa(packageManager, [
-    ...(packageManager === 'npm' ? ['run'] : []),
-    'ng',
-    'build',
-    projectName,
-  ]);
+  await execa(packageManager, [...(packageManager === 'npm' ? ['run'] : []), 'ng', 'build', projectName]);
 }
