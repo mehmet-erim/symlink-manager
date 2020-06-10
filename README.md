@@ -64,7 +64,8 @@ Symlink-manager supports the CI
 yarn symlink copy --angular --all-packages --no-watch --sync --excluded-packages package1,package2
 ```
 
-If building order matters, you can pass --sync
+> If building order matters, you can pass `--sync`.
+> You can pass `--prod` option for production configuration.
 
 ```bash
 yarn symlink --sync

@@ -10,7 +10,7 @@ import copy from './utils/copy';
 import { Log } from './utils/log';
 import prompt from './utils/prompt';
 
-export default async function(options) {
+export default async function (options) {
   let angularPath = ANGULAR_FILE_PATH;
   let angularJson;
 
@@ -30,7 +30,7 @@ export default async function(options) {
   const projectNames = [];
 
   let libraries = Object.keys(angularJson.projects)
-    .map(key => {
+    .map((key) => {
       if (angularJson.projects[key].projectType === 'library') {
         projectNames.push(key);
       }
@@ -39,7 +39,7 @@ export default async function(options) {
     })
     .filter(({ projectType }) => projectType === 'library');
 
-  const packageNames = libraries.map(library => {
+  const packageNames = libraries.map((library) => {
     try {
       return fse.readJSONSync(`${library.root}/package.json`).name;
     } catch (error) {
@@ -57,7 +57,7 @@ export default async function(options) {
     outputFolderPath: getOutputFolder(library.architect.build.options.project),
   }));
 
-  const logSelectedPackages = selectedPackages =>
+  const logSelectedPackages = (selectedPackages) =>
     Log.info(
       `Selected packages: ${JSON.stringify(selectedPackages)
         .replace(/\[|\]|\"/g, '')
@@ -66,14 +66,14 @@ export default async function(options) {
 
   let selectedPackages = [];
   if (options.packages && options.packages.length && !options.allPackages) {
-    selectedPackages = options.packages.filter(pack => packageNames.indexOf((pack || '').toLowerCase()) > -1);
+    selectedPackages = options.packages.filter((pack) => packageNames.indexOf((pack || '').toLowerCase()) > -1);
     logSelectedPackages(selectedPackages);
   } else if (options.allPackages) {
     selectedPackages = [...packageNames];
 
     if (options.excludedPackages) {
       const excluded = options.excludedPackages.split(',');
-      selectedPackages = selectedPackages.filter(x => !excluded.includes(x));
+      selectedPackages = selectedPackages.filter((x) => !excluded.includes(x));
     }
 
     logSelectedPackages(selectedPackages);
@@ -94,16 +94,24 @@ export default async function(options) {
   }
   const spinner = Log.spinner('Processing...');
   const packageManager = options.yarn ? 'yarn' : 'npm';
-  selectedPackages.forEach(async packName => {
-    const { projectName, outputFolderPath, root } = libraries.find(library => library.packageName === packName);
+  selectedPackages.forEach(async (packName) => {
+    const { projectName, outputFolderPath, root } = libraries.find((library) => library.packageName === packName);
     if (options.command === 'link' || options.command === 'copy') {
       spinner.start();
+      const command = [
+        ...(packageManager === 'npm' ? ['run'] : []),
+        'ng',
+        'build',
+        projectName,
+        ...(options.prod ? ['--prod'] : []),
+      ];
 
+      console.log('\nRunning: ' + [packageManager, ...command].join(' '));
       try {
         if (options.syncBuild) {
-          execa.sync(packageManager, [...(packageManager === 'npm' ? ['run'] : []), 'ng', 'build', projectName]);
+          execa.sync(packageManager, command);
         } else {
-          await build(packageManager, projectName);
+          await build(packageManager, command);
         }
       } catch (error) {
         spinner.stop();
@@ -147,7 +155,7 @@ export default async function(options) {
 
           Log.info(`\n${packName} build has been started.`);
 
-          subscribe = from(build(packageManager, projectName))
+          subscribe = from(build(packageManager, command))
             .pipe(
               switchMap(() => (options.command === 'copy' ? from(copy(outputFolderPath)) : of(null))),
               takeUntil(destroy$),
@@ -160,7 +168,7 @@ export default async function(options) {
                   Log.success(`The output files successfully copied.`);
                 }
               },
-              error: error => {
+              error: (error) => {
                 Log.error(error.stderr);
               },
             });
@@ -189,6 +197,6 @@ function getOutputFolder(ngPackagePath) {
   return path.normalize(`${ngPackagePath}/../${ngPackage.dest}`);
 }
 
-async function build(packageManager, projectName) {
-  await execa(packageManager, [...(packageManager === 'npm' ? ['run'] : []), 'ng', 'build', projectName]);
+async function build(packageManager, command) {
+  await execa(packageManager, command);
 }

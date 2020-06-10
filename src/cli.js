@@ -18,6 +18,7 @@ function parseArgumentsIntoOptions(rawArgs) {
       '--sync-build': Boolean,
       '--sync': Boolean,
       '--yarn': Boolean,
+      '--prod': Boolean,
       '-a': '--angular',
       '-y': '--yarn',
     },
@@ -34,6 +35,7 @@ function parseArgumentsIntoOptions(rawArgs) {
     syncBuild: args['--sync-build'],
     sync: args['--sync'],
     yarn: args['--yarn'],
+    prod: args['--prod'],
     command: args._[0] || '',
   };
 }
@@ -54,7 +56,7 @@ export async function cli(args) {
   }
 
   if (options.packages) {
-    options.packages = options.packages.split(',').filter(pack => pack);
+    options.packages = options.packages.split(',').filter((pack) => pack);
   }
 
   if (
