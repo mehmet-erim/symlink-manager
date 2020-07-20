@@ -9,7 +9,7 @@ import copy from './utils/copy';
 import { Subject, from, of } from 'rxjs';
 import { switchMap, takeUntil, take } from 'rxjs/operators';
 
-export default async function(options, config) {
+export default async function (options, config) {
   const packageNames = getPackageNames(config);
 
   if (!packageNames.length) {
@@ -28,20 +28,30 @@ export default async function(options, config) {
     message = 'copy';
   }
 
-  let selectedPackages = [];
-  if (options.packages) {
-    selectedPackages = options.packages.filter(
-      pack => packageNames.indexOf((pack || '').toLowerCase()) > -1,
+  const logSelectedPackages = (selectedPackages) =>
+    Log.info(
+      `Selected packages: ${JSON.stringify(selectedPackages)
+        .replace(/\[|\]|\"/g, '')
+        .replace(/\,/g, ', ')}`,
     );
+
+  let selectedPackages = [];
+  if (options.packages && options.packages.length && !options.allPackages) {
+    selectedPackages = options.packages.filter((pack) => packageNames.indexOf((pack || '').toLowerCase()) > -1);
+    logSelectedPackages(selectedPackages);
+  } else if (options.allPackages) {
+    selectedPackages = [...packageNames];
+
+    if (options.excludedPackages) {
+      const excluded = options.excludedPackages.split(',');
+      selectedPackages = selectedPackages.filter((x) => !excluded.includes(x));
+    }
+
+    logSelectedPackages(selectedPackages);
   }
 
   if (!selectedPackages.length) {
-    selectedPackages = await prompt(
-      'packages',
-      packageNames,
-      `Please choose packages for ${message}:`,
-      'checkbox',
-    );
+    selectedPackages = await prompt('packages', packageNames, `Please choose packages for ${message}:`, 'checkbox');
   }
 
   if (!selectedPackages.length) {
@@ -52,7 +62,7 @@ export default async function(options, config) {
   const spinner = Log.spinner('Processing...');
   const packageManager = options.yarn ? 'yarn' : 'npm';
 
-  selectedPackages.forEach(async packName => {
+  selectedPackages.forEach(async (packName) => {
     const index = packageNames.indexOf(packName);
     const pack = config.packages[index];
 
@@ -117,8 +127,7 @@ export default async function(options, config) {
         let destroy$ = new Subject();
         let subscribe = {};
 
-        const ignored =
-          pack.exclude && pack.exclude.length ? new RegExp(pack.exclude.join('|')) : null;
+        const ignored = pack.exclude && pack.exclude.length ? new RegExp(pack.exclude.join('|')) : null;
 
         chokidar.watch(path.normalize(pack.libraryFolderPath), { ignored }).on(
           'change',
@@ -136,9 +145,7 @@ export default async function(options, config) {
               }),
             )
               .pipe(
-                switchMap(() =>
-                  options.command === 'copy' ? from(copy(pack.linkFolderPath)) : of(null),
-                ),
+                switchMap(() => (options.command === 'copy' ? from(copy(pack.linkFolderPath)) : of(null))),
                 takeUntil(destroy$),
                 take(1),
               )
@@ -149,7 +156,7 @@ export default async function(options, config) {
                     Log.success(`The output files successfully copied.`);
                   }
                 },
-                error: error => {
+                error: (error) => {
                   Log.error(error.stderr);
                 },
               });
@@ -177,7 +184,7 @@ export default async function(options, config) {
 function getPackageNames(config) {
   const names = [];
 
-  config.packages.forEach(async pack => {
+  config.packages.forEach(async (pack) => {
     const packageJson = fse.readJSONSync(`${pack.libraryFolderPath}/package.json`, {
       throws: false,
     });
